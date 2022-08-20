@@ -23,8 +23,8 @@ services:
     ports:
       - "9000:3306"
     environment:
-      MYSQL_DATABASE: miniautorizador
-      MYSQL_ROOT_PASSWORD:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: MINI_AUTORIZADOR
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: 123456
     volumes:
       - ./scripts/script_miniautorizador.sql:/docker-entrypoint-initdb.d/script_miniautorizador.sql:ro

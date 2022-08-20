@@ -1,4 +1,6 @@
-USE miniautorizador;
+CREATE DATABASE MINI_AUTORIZADOR;
+
+USE MINI_AUTORIZADOR;
 
 CREATE TABLE CARTAO (
 	id integer auto_increment not null,
