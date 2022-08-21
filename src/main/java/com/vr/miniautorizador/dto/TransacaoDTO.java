@@ -6,6 +6,9 @@ public class TransacaoDTO {
     private String senha;
     private double valorTransacao;
 
+    public TransacaoDTO() {
+    }
+
     public TransacaoDTO(String numeroCartao, String senha, double valorTransacao) {
         this.numeroCartao = numeroCartao;
         this.senha = senha;

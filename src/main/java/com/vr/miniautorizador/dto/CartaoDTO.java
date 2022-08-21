@@ -5,6 +5,9 @@ public class CartaoDTO {
     private String numeroCartao;
     private String senhaCartao;
 
+    public CartaoDTO() {
+    }
+
     public CartaoDTO(String numeroCartao, String senhaCartao) {
         this.numeroCartao = numeroCartao;
         this.senhaCartao = senhaCartao;
