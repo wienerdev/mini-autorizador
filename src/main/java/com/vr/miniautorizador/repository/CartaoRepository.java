@@ -1,7 +1,5 @@
 package com.vr.miniautorizador.repository;
 
-import java.util.Collection;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,12 +11,19 @@ import com.vr.miniautorizador.model.Cartao;
 @Repository
 public interface CartaoRepository extends JpaRepository<Cartao, Integer> {
 
-    @Query(value = "SELECT * FROM CARTAO ", nativeQuery=true)
-    public Collection<Cartao> getAllCartoes();
+    @Query(value = "SELECT * FROM CARTAO as c "
+    + "WHERE c.numero = ?1", nativeQuery = true)
+    public Cartao getCartaoPorNumero(String numeroCartao);
 
     @Query(value = "SELECT COUNT(*) FROM CARTAO "
      + " WHERE numero = ?1 ", nativeQuery = true)
-    public Integer isCartaoExiste(String numeroCartao);
+    public Integer getQuantidadeCartao(String numeroCartao);
+
+    @Query(value = "UPDATE CARTAO SET saldo = ?1 "
+    + " WHERE numero = ?2 ", nativeQuery = true)
+    @Modifying
+    @Transactional
+    public void atualizarSaldoPorNumeroCartao(double saldo, String numeroCartao);
 
     @Query(value = "INSERT INTO CARTAO(numero, senha, saldo) "
     + " VALUES (?1, ?2, ?3) ", nativeQuery = true)
@@ -26,8 +31,4 @@ public interface CartaoRepository extends JpaRepository<Cartao, Integer> {
     @Transactional
     public void criarCartao(String numeroCartao, String senha, double saldo);
 
-    @Query(value = "SELECT c.saldo FROM CARTAO as c "
-    + " WHERE c.numero = ?1 ", nativeQuery = true)
-    public double getSaldoCartao(String numeroCartao);
-    
 }
