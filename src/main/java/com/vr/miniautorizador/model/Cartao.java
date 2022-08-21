@@ -33,6 +33,38 @@ public class Cartao {
         this.saldo = 500.00;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public double getSaldo() {
+        return saldo;
+    }
+
+    public void setSaldo(double saldo) {
+        this.saldo = saldo;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(id);
@@ -49,5 +81,10 @@ public class Cartao {
         Cartao other = (Cartao) obj;
         return Objects.equals(id, other.id);
     }
-    
+
+    @Override
+    public String toString() {
+        return "Informações do cartão: [numero=" + numero + ", saldo=" + saldo + ", senha=" + senha + "]";
+    }
+
 }
