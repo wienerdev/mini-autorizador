@@ -10,7 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(schema = "miniautorizador", name = "CARTAO")
+@Table(schema = "MINI_AUTORIZADOR", name = "CARTAO")
 public class Cartao {
 
     @Id
