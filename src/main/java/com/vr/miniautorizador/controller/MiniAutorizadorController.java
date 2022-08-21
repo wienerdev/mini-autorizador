@@ -12,31 +12,40 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vr.miniautorizador.dto.CartaoDTO;
-import com.vr.miniautorizador.service.ConsultarSaldoService;
-import com.vr.miniautorizador.service.CriarCartaoService;
+import com.vr.miniautorizador.dto.TransacaoDTO;
+import com.vr.miniautorizador.service.MiniAutorizadorService;
 
 @RestController
 @RequestMapping(value = "cartoes")
 public class MiniAutorizadorController {
 
     @Autowired
-    CriarCartaoService criarCartaoService;
-
-    @Autowired
-    ConsultarSaldoService consultarSaldoService;
+    MiniAutorizadorService service;
 
     @GetMapping("/obter-saldo/{numeroCartao}")
     public @ResponseBody ResponseEntity<Double> obterSaldoCartao(@PathVariable String numeroCartao) {
-        return new ResponseEntity<Double>(consultarSaldoService.obterSaldoCartao(numeroCartao), HttpStatus.OK);
+        return new ResponseEntity<Double>(service.obterSaldoCartao(numeroCartao), HttpStatus.OK);
     }
 
     @PostMapping("/criar-cartao")
     public @ResponseBody ResponseEntity<CartaoDTO> criarNovoCartao(@RequestBody CartaoDTO cartaoDto) {
-        if (criarCartaoService.isCartaoExiste(cartaoDto.getNumeroCartao())) {
-            return new ResponseEntity<CartaoDTO>(new CartaoDTO(cartaoDto.getNumeroCartao(), cartaoDto.getSenhaCartao()), HttpStatus.UNPROCESSABLE_ENTITY);
+        if (service.isCartaoInexiste(cartaoDto.getNumeroCartao())) {
+            return new ResponseEntity<CartaoDTO>(service.criarNovoCartao(cartaoDto), HttpStatus.CREATED);
         } else {
-            return new ResponseEntity<CartaoDTO>(criarCartaoService.criarNovoCartao(cartaoDto), HttpStatus.CREATED);
+            return new ResponseEntity<CartaoDTO>(new CartaoDTO(cartaoDto.getNumeroCartao(), cartaoDto.getSenhaCartao()), HttpStatus.UNPROCESSABLE_ENTITY);
         }
+    }
+
+    @PostMapping("transacoes")
+    public @ResponseBody ResponseEntity<String> realizarTransacao(@RequestBody TransacaoDTO transacaoDTO) {
+        return new ResponseEntity<String>(
+            service.autorizarTransacao(
+                transacaoDTO.getNumeroCartao(),
+                transacaoDTO.getSenha(),
+                transacaoDTO.getValorTransacao()
+            ),
+            HttpStatus.CREATED
+        );
     }
     
 }
