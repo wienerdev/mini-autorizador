@@ -27,6 +27,9 @@ public class Cartao {
     @Column(name="saldo")
     private double saldo;
 
+    public Cartao() {
+    }
+
     public Cartao(String numero, String senha) {
         this.numero = numero;
         this.senha = senha;
