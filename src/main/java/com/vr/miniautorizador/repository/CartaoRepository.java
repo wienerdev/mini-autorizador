@@ -11,13 +11,11 @@ import com.vr.miniautorizador.model.Cartao;
 @Repository
 public interface CartaoRepository extends JpaRepository<Cartao, Integer> {
 
+    Cartao findCartaoByNumero(String numero);
+
     @Query(value = "SELECT * FROM CARTAO as c "
     + "WHERE c.numero = ?1", nativeQuery = true)
     public Cartao getCartaoPorNumero(String numeroCartao);
-
-    @Query(value = "SELECT COUNT(*) FROM CARTAO "
-     + " WHERE numero = ?1 ", nativeQuery = true)
-    public Integer getQuantidadeCartao(String numeroCartao);
 
     @Query(value = "UPDATE CARTAO SET saldo = ?1 "
     + " WHERE numero = ?2 ", nativeQuery = true)

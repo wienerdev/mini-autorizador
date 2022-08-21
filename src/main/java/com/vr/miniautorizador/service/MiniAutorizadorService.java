@@ -1,9 +1,13 @@
 package com.vr.miniautorizador.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.vr.miniautorizador.dto.CartaoDTO;
+import com.vr.miniautorizador.dto.TransacaoDTO;
+import com.vr.miniautorizador.exception.MiniAutorizadorException;
 import com.vr.miniautorizador.model.Cartao;
 import com.vr.miniautorizador.repository.CartaoRepository;
 
@@ -13,41 +17,45 @@ public class MiniAutorizadorService {
     @Autowired
     CartaoRepository repository;
     
-    public CartaoDTO criarNovoCartao(CartaoDTO dto) {
-        Cartao cartao = parseCartao(dto);
+    public ResponseEntity<CartaoDTO> criarNovoCartao(CartaoDTO request) {
+        if (isCartaoExistente(request.getNumeroCartao())) {
+            return new ResponseEntity<CartaoDTO>(new CartaoDTO(request.getNumeroCartao(), request.getSenhaCartao()), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        Cartao cartao = parseCartao(request);
         repository.criarCartao(cartao.getNumero(), cartao.getSenha(), cartao.getSaldo());
-        return parseCartaoDto(cartao);
+
+        return new ResponseEntity<CartaoDTO>(parseCartaoDto(cartao), HttpStatus.CREATED);
     }
 
-    public double obterSaldoCartao(String numeroCartao) {
+    public ResponseEntity<Double> obterSaldoCartao(String numeroCartao) {
         Cartao cartao = repository.getCartaoPorNumero(numeroCartao);
-        return cartao.getSaldo();
+        return new ResponseEntity<Double>(cartao.getSaldo(), HttpStatus.OK);
     }
 
-    public String autorizarTransacao(String numeroCartao, String senha, double valorTransacao) {
-        if (isCartaoInexiste(numeroCartao)) {
-            return "CARTAO_INEXISTENTE";
+    public ResponseEntity<String> autorizarTransacao(TransacaoDTO request) throws MiniAutorizadorException {
+        if (!isCartaoExistente(request.getNumeroCartao())) {
+            return new ResponseEntity<String>("CARTAO_INEXISTENTE", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        Cartao cartao = repository.getCartaoPorNumero(numeroCartao);
+        Cartao cartao = repository.getCartaoPorNumero(request.getNumeroCartao());
         
-        if (isSenhaInvalida(senha, cartao)) {
-            return "SENHA_INVALIDA";
+        if (isSenhaInvalida(cartao.getSenha(), cartao)) {
+            return new ResponseEntity<String>("SENHA_INVALIDA", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        if (isSaldoInsuficiente(valorTransacao, cartao)) {
-            return "SALDO_INSUFICIENTE";
+        if (isSaldoInsuficiente(cartao.getSaldo(), cartao)) {
+            return new ResponseEntity<String>("SALDO_INSUFICIENTE", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        cartao.setSaldo(cartao.getSaldo()-valorTransacao);
+        cartao.setSaldo(cartao.getSaldo()-request.getValorTransacao());
         repository.atualizarSaldoPorNumeroCartao(cartao.getSaldo(), cartao.getNumero());
 
-        return "A transação foi efetuada com sucesso!";
+        return new ResponseEntity<String>("OK", HttpStatus.CREATED);
     }
 
-    public boolean isCartaoInexiste(String numeroCartao) {
-        Integer qntCartao = repository.getQuantidadeCartao(numeroCartao);
-        return qntCartao == 0 ? true : false;
+    private boolean isCartaoExistente(String numeroCartao) {
+        Cartao cartao = repository.getCartaoPorNumero(numeroCartao);
+        return cartao != null;
     }
 
     private boolean isSaldoInsuficiente(double valorTransacao, Cartao cartao) {
