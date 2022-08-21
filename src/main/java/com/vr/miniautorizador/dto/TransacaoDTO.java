@@ -1,10 +1,16 @@
 package com.vr.miniautorizador.dto;
 
-public class AutorizarTransacaoDTO {
+public class TransacaoDTO {
 
     private String numeroCartao;
     private String senha;
     private double valorTransacao;
+
+    public TransacaoDTO(String numeroCartao, String senha, double valorTransacao) {
+        this.numeroCartao = numeroCartao;
+        this.senha = senha;
+        this.valorTransacao = valorTransacao;
+    }
 
     public String getNumeroCartao() {
         return numeroCartao;
