@@ -27,4 +27,4 @@ services:
       MYSQL_ROOT_USER: root
       MYSQL_ROOT_PASSWORD: 123456
     volumes:
-      - ./scripts/script_miniautorizador.sql:/docker-entrypoint-initdb.d/script_miniautorizador.sql:ro
+      - ./scripts/script_miniautorizador.sql:/docker-entrypoint-initdb.d/script_miniautorizador.sql
