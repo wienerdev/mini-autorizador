@@ -37,7 +37,7 @@ Para executar o projeto, digite o seguinte comando no diretório raiz (**mini-au
 mvn spring-boot:run 
 ```
 
-# Serviços disponíveis para testes:
+## 📲 Serviços disponíveis para testes
 
 ### Criar novo cartão
 ```
