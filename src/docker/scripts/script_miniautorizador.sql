@@ -7,14 +7,3 @@ CREATE TABLE CARTAO (
     saldo double not null,
     primary key (id)
 );
-
-INSERT INTO CARTAO(
-	numero,
-    senha,
-    saldo
-)
-VALUES (
-	"6549873025634501",
-    "1234",
-    500.00
-);
