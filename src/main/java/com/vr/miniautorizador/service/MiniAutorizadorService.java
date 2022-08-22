@@ -75,11 +75,11 @@ public class MiniAutorizadorService {
         return cartao != null;
     }
 
-    private static ResponseEntity<CartaoDTO> creationErrorResponse(CartaoDTO request, HttpStatus status) {
+    private ResponseEntity<CartaoDTO> creationErrorResponse(CartaoDTO request, HttpStatus status) {
         return new ResponseEntity<>(new CartaoDTO(request.getNumeroCartao(), request.getSenhaCartao()), status);
     }
 
-    private static boolean isTamanhoNumeroCartaoInvalido(CartaoDTO request) {
+    private boolean isTamanhoNumeroCartaoInvalido(CartaoDTO request) {
         return request.getNumeroCartao().length() != 16;
     }
 
