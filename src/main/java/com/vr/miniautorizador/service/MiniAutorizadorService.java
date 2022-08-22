@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import com.vr.miniautorizador.dto.CartaoDTO;
 import com.vr.miniautorizador.dto.TransacaoDTO;
-import com.vr.miniautorizador.exception.MiniAutorizadorException;
 import com.vr.miniautorizador.model.Cartao;
 import com.vr.miniautorizador.repository.CartaoRepository;
 
@@ -22,13 +21,13 @@ public class MiniAutorizadorService {
             return new ResponseEntity<>(new CartaoDTO(request.getNumeroCartao(), request.getSenhaCartao()), HttpStatus.UNPROCESSABLE_ENTITY);
         }
         Cartao cartao = parseCartao(request);
-        repository.criarCartao(cartao.getNumero(), cartao.getSenha(), cartao.getSaldo());
+        repository.save(cartao);
 
         return new ResponseEntity<>(parseCartaoDto(cartao), HttpStatus.CREATED);
     }
 
     public ResponseEntity<Double> obterSaldoCartao(String numeroCartao) {
-        Cartao cartao = repository.getCartaoPorNumero(numeroCartao);
+        Cartao cartao = repository.findCartaoByNumero(numeroCartao);
         return new ResponseEntity<>(cartao.getSaldo(), HttpStatus.OK);
     }
 
@@ -37,7 +36,7 @@ public class MiniAutorizadorService {
             return new ResponseEntity<>("CARTAO_INEXISTENTE", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        Cartao cartao = repository.getCartaoPorNumero(request.getNumeroCartao());
+        Cartao cartao = repository.findCartaoByNumero(request.getNumeroCartao());
         
         if (isSenhaInvalida(request.getSenha(), cartao.getSenha())) {
             return new ResponseEntity<>("SENHA_INVALIDA", HttpStatus.UNPROCESSABLE_ENTITY);
@@ -49,13 +48,12 @@ public class MiniAutorizadorService {
 
         cartao.setSaldo(cartao.getSaldo()-request.getValorTransacao());
         repository.save(cartao);
-        //repository.atualizarSaldoPorNumeroCartao(cartao.getSaldo(), cartao.getNumero());
 
         return new ResponseEntity<>("OK", HttpStatus.CREATED);
     }
 
     private boolean isCartaoExistente(String numeroCartao) {
-        Cartao cartao = repository.getCartaoPorNumero(numeroCartao);
+        Cartao cartao = repository.findCartaoByNumero(numeroCartao);
         return cartao != null;
     }
 

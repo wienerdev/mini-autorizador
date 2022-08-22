@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vr.miniautorizador.dto.CartaoDTO;
 import com.vr.miniautorizador.dto.TransacaoDTO;
-import com.vr.miniautorizador.exception.MiniAutorizadorException;
 import com.vr.miniautorizador.service.MiniAutorizadorService;
 
 @RestController
@@ -33,7 +32,7 @@ public class MiniAutorizadorController {
     }
 
     @PostMapping("transacoes")
-    public @ResponseBody ResponseEntity<String> realizarTransacao(@RequestBody TransacaoDTO transacaoDTO) throws MiniAutorizadorException {
+    public @ResponseBody ResponseEntity<String> realizarTransacao(@RequestBody TransacaoDTO transacaoDTO) {
         return service.autorizarTransacao(transacaoDTO);
     }
     
