@@ -15,13 +15,16 @@ public class MiniAutorizadorService {
 
     @Autowired
     CartaoRepository repository;
-    
+
     public ResponseEntity<CartaoDTO> criarNovoCartao(CartaoDTO request) {
         if (isCartaoExistente(request.getNumeroCartao())) {
             return new ResponseEntity<>(new CartaoDTO(request.getNumeroCartao(), request.getSenhaCartao()), HttpStatus.UNPROCESSABLE_ENTITY);
         }
+
         Cartao cartao = parseCartao(request);
-        repository.save(cartao);
+        //repository.save(cartao);
+        // Demonstracao utilizando query nativa, poderia ter sido utilizado também o método do JPA acima (repository.save(cartao))
+        repository.criarCartao(cartao.getNumero(), cartao.getSenha(), cartao.getSaldo());
 
         return new ResponseEntity<>(parseCartaoDto(cartao), HttpStatus.CREATED);
     }
