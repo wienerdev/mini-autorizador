@@ -15,18 +15,18 @@ public interface CartaoRepository extends JpaRepository<Cartao, Integer> {
 
     @Query(value = "SELECT * FROM CARTAO as c "
     + "WHERE c.numero = ?1", nativeQuery = true)
-    public Cartao getCartaoPorNumero(String numeroCartao);
+    Cartao getCartaoPorNumero(String numeroCartao);
 
     @Query(value = "UPDATE CARTAO SET saldo = ?1 "
     + " WHERE numero = ?2 ", nativeQuery = true)
     @Modifying
     @Transactional
-    public void atualizarSaldoPorNumeroCartao(double saldo, String numeroCartao);
+    void atualizarSaldoPorNumeroCartao(double saldo, String numeroCartao);
 
     @Query(value = "INSERT INTO CARTAO(numero, senha, saldo) "
     + " VALUES (?1, ?2, ?3) ", nativeQuery = true)
     @Modifying
     @Transactional
-    public void criarCartao(String numeroCartao, String senha, double saldo);
+    void criarCartao(String numeroCartao, String senha, double saldo);
 
 }

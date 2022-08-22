@@ -19,38 +19,39 @@ public class MiniAutorizadorService {
     
     public ResponseEntity<CartaoDTO> criarNovoCartao(CartaoDTO request) {
         if (isCartaoExistente(request.getNumeroCartao())) {
-            return new ResponseEntity<CartaoDTO>(new CartaoDTO(request.getNumeroCartao(), request.getSenhaCartao()), HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(new CartaoDTO(request.getNumeroCartao(), request.getSenhaCartao()), HttpStatus.UNPROCESSABLE_ENTITY);
         }
         Cartao cartao = parseCartao(request);
         repository.criarCartao(cartao.getNumero(), cartao.getSenha(), cartao.getSaldo());
 
-        return new ResponseEntity<CartaoDTO>(parseCartaoDto(cartao), HttpStatus.CREATED);
+        return new ResponseEntity<>(parseCartaoDto(cartao), HttpStatus.CREATED);
     }
 
     public ResponseEntity<Double> obterSaldoCartao(String numeroCartao) {
         Cartao cartao = repository.getCartaoPorNumero(numeroCartao);
-        return new ResponseEntity<Double>(cartao.getSaldo(), HttpStatus.OK);
+        return new ResponseEntity<>(cartao.getSaldo(), HttpStatus.OK);
     }
 
-    public ResponseEntity<String> autorizarTransacao(TransacaoDTO request) throws MiniAutorizadorException {
+    public ResponseEntity<String> autorizarTransacao(TransacaoDTO request) {
         if (!isCartaoExistente(request.getNumeroCartao())) {
-            return new ResponseEntity<String>("CARTAO_INEXISTENTE", HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>("CARTAO_INEXISTENTE", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         Cartao cartao = repository.getCartaoPorNumero(request.getNumeroCartao());
         
-        if (isSenhaInvalida(cartao.getSenha(), cartao)) {
-            return new ResponseEntity<String>("SENHA_INVALIDA", HttpStatus.UNPROCESSABLE_ENTITY);
+        if (isSenhaInvalida(request.getSenha(), cartao.getSenha())) {
+            return new ResponseEntity<>("SENHA_INVALIDA", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        if (isSaldoInsuficiente(cartao.getSaldo(), cartao)) {
-            return new ResponseEntity<String>("SALDO_INSUFICIENTE", HttpStatus.UNPROCESSABLE_ENTITY);
+        if (isSaldoInsuficiente(request.getValorTransacao(), cartao.getSaldo())) {
+            return new ResponseEntity<>("SALDO_INSUFICIENTE", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         cartao.setSaldo(cartao.getSaldo()-request.getValorTransacao());
-        repository.atualizarSaldoPorNumeroCartao(cartao.getSaldo(), cartao.getNumero());
+        repository.save(cartao);
+        //repository.atualizarSaldoPorNumeroCartao(cartao.getSaldo(), cartao.getNumero());
 
-        return new ResponseEntity<String>("OK", HttpStatus.CREATED);
+        return new ResponseEntity<>("OK", HttpStatus.CREATED);
     }
 
     private boolean isCartaoExistente(String numeroCartao) {
@@ -58,12 +59,12 @@ public class MiniAutorizadorService {
         return cartao != null;
     }
 
-    private boolean isSaldoInsuficiente(double valorTransacao, Cartao cartao) {
-        return valorTransacao > cartao.getSaldo();
+    private boolean isSaldoInsuficiente(double valorTransacao, double saldoCartao) {
+        return valorTransacao > saldoCartao;
     }
 
-    private boolean isSenhaInvalida(String senha, Cartao cartao) {
-        return !senha.equals(cartao.getSenha());
+    private boolean isSenhaInvalida(String senha, String senhaCartao) {
+        return !senha.equals(senhaCartao);
     }
 
     private Cartao parseCartao(CartaoDTO dto) {
