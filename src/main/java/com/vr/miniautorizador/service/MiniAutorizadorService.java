@@ -22,14 +22,13 @@ public class MiniAutorizadorService {
         if (isCartaoExistente(request.getNumeroCartao())) {
             return creationErrorResponse(request, HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        if(request.getNumeroCartao().length() != 16) {
+        if(isTamanhoNumeroCartaoInvalido(request)) {
             return creationErrorResponse(request, HttpStatus.BAD_REQUEST);
         }
 
         Cartao cartao = parseCartao(request);
 
-        //repository.save(cartao);
-        // Demonstracao utilizando query nativa, poderia ter sido utilizado também o método do JPA acima (repository.save(cartao))
+        // Demonstracao utilizando query nativa, poderia ter sido utilizado também o método do JPA (repository.save(cartao))
         try {
             repository.criarCartao(cartao.getNumero(), cartao.getSenha(), cartao.getSaldo());
         } catch (Exception e) {
@@ -40,21 +39,22 @@ public class MiniAutorizadorService {
         return new ResponseEntity<>(parseCartaoDto(cartao), HttpStatus.CREATED);
     }
 
-    private static ResponseEntity<CartaoDTO> creationErrorResponse(CartaoDTO request, HttpStatus status) {
-        return new ResponseEntity<>(new CartaoDTO(request.getNumeroCartao(), request.getSenhaCartao()), status);
-    }
-
     public ResponseEntity<BigDecimal> obterSaldoCartao(String numeroCartao) {
         Cartao cartao = repository.findCartaoByNumero(numeroCartao);
+
+        if (cartao == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         return new ResponseEntity<>(cartao.getSaldo(), HttpStatus.OK);
     }
 
     public ResponseEntity<String> autorizarTransacao(TransacaoDTO request) {
-        if (!isCartaoExistente(request.getNumeroCartao())) {
+        Cartao cartao = repository.findCartaoByNumero(request.getNumeroCartao());
+
+        if (cartao == null) {
             return new ResponseEntity<>("CARTAO_INEXISTENTE", HttpStatus.UNPROCESSABLE_ENTITY);
         }
-
-        Cartao cartao = repository.findCartaoByNumero(request.getNumeroCartao());
         
         if (isSenhaInvalida(request.getSenha(), cartao.getSenha())) {
             return new ResponseEntity<>("SENHA_INVALIDA", HttpStatus.UNPROCESSABLE_ENTITY);
@@ -75,16 +75,24 @@ public class MiniAutorizadorService {
         return cartao != null;
     }
 
+    private static ResponseEntity<CartaoDTO> creationErrorResponse(CartaoDTO request, HttpStatus status) {
+        return new ResponseEntity<>(new CartaoDTO(request.getNumeroCartao(), request.getSenhaCartao()), status);
+    }
+
+    private static boolean isTamanhoNumeroCartaoInvalido(CartaoDTO request) {
+        return request.getNumeroCartao().length() != 16;
+    }
+
+    private Cartao parseCartao(CartaoDTO dto) {
+        return new Cartao(dto.getNumeroCartao(), dto.getSenhaCartao());
+    }
+
     private boolean isSaldoInsuficiente(BigDecimal valorTransacao, BigDecimal saldoCartao) {
         return valorTransacao.compareTo(saldoCartao) == 1;
     }
 
     private boolean isSenhaInvalida(String senha, String senhaCartao) {
         return !senha.equals(senhaCartao);
-    }
-
-    private Cartao parseCartao(CartaoDTO dto) {
-        return new Cartao(dto.getNumeroCartao(), dto.getSenhaCartao());
     }
 
     private CartaoDTO parseCartaoDto(Cartao cartao) {
