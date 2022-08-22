@@ -1,15 +1,17 @@
 package com.vr.miniautorizador.dto;
 
+import java.math.BigDecimal;
+
 public class TransacaoDTO {
 
     private String numeroCartao;
     private String senha;
-    private double valorTransacao;
+    private BigDecimal valorTransacao;
 
     public TransacaoDTO() {
     }
 
-    public TransacaoDTO(String numeroCartao, String senha, double valorTransacao) {
+    public TransacaoDTO(String numeroCartao, String senha, BigDecimal valorTransacao) {
         this.numeroCartao = numeroCartao;
         this.senha = senha;
         this.valorTransacao = valorTransacao;
@@ -31,11 +33,11 @@ public class TransacaoDTO {
         this.senha = senha;
     }
 
-    public double getValorTransacao() {
+    public BigDecimal getValorTransacao() {
         return valorTransacao;
     }
 
-    public void setValorTransacao(double valorTransacao) {
+    public void setValorTransacao(BigDecimal valorTransacao) {
         this.valorTransacao = valorTransacao;
     }
 

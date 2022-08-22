@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.vr.miniautorizador.model.Cartao;
 
+import java.math.BigDecimal;
+
 @Repository
 public interface CartaoRepository extends JpaRepository<Cartao, Integer> {
 
@@ -17,6 +19,6 @@ public interface CartaoRepository extends JpaRepository<Cartao, Integer> {
     + " VALUES (?1, ?2, ?3) ", nativeQuery = true)
     @Modifying
     @Transactional
-    void criarCartao(String numeroCartao, String senha, double saldo);
+    void criarCartao(String numeroCartao, String senha, BigDecimal saldo);
 
 }

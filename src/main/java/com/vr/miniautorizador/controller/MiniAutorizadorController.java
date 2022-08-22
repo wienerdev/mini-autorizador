@@ -14,6 +14,8 @@ import com.vr.miniautorizador.dto.CartaoDTO;
 import com.vr.miniautorizador.dto.TransacaoDTO;
 import com.vr.miniautorizador.service.MiniAutorizadorService;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping(value = "cartoes")
 public class MiniAutorizadorController {
@@ -22,7 +24,7 @@ public class MiniAutorizadorController {
     MiniAutorizadorService service;
 
     @GetMapping("/obter-saldo/{numeroCartao}")
-    public @ResponseBody ResponseEntity<Double> obterSaldoCartao(@PathVariable(name = "numeroCartao") String request) {
+    public @ResponseBody ResponseEntity<BigDecimal> obterSaldoCartao(@PathVariable(name = "numeroCartao") String request) {
         return service.obterSaldoCartao(request);
     }
 

@@ -1,5 +1,6 @@
 package com.vr.miniautorizador.model;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -25,7 +26,7 @@ public class Cartao {
     private String senha;
 
     @Column(name="saldo")
-    private double saldo;
+    private BigDecimal saldo;
 
     public Cartao() {
     }
@@ -33,7 +34,7 @@ public class Cartao {
     public Cartao(String numero, String senha) {
         this.numero = numero;
         this.senha = senha;
-        this.saldo = 500.00;
+        this.saldo = BigDecimal.valueOf(500.00);
     }
 
     public Integer getId() {
@@ -60,11 +61,11 @@ public class Cartao {
         this.senha = senha;
     }
 
-    public double getSaldo() {
+    public BigDecimal getSaldo() {
         return saldo;
     }
 
-    public void setSaldo(double saldo) {
+    public void setSaldo(BigDecimal saldo) {
         this.saldo = saldo;
     }
 
